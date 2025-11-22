@@ -1,0 +1,16 @@
+{
+  "name": "url-shortner",
+  "version": "1.0.0",
+  "description": "server (backend) for url shortner in node.js maybe",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ashut0sh",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongoose": "^9.0.0",
+    "typescript": "^5.9.3"
+  }
+}
