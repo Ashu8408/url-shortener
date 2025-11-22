@@ -4,7 +4,10 @@
   "description": "server (backend) for url shortner in node.js maybe",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx tsc",
+    "start": "npx tsc && node ./dist/server.js",
+      "dev": "node --watch server.js"
   },
   "author": "Ashut0sh",
   "license": "ISC",
