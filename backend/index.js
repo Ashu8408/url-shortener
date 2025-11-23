@@ -41,4 +41,4 @@ app.get("/:shortId", async (req, res) => {
     res.redirect(entry.redirectURL);
 });
 
-app.listen(PORT, () => console.log(`Server Started at Port:${PORT}`));
+module.exports = app;
