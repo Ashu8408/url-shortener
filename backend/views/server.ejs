@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Shortener Dashboard</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+    <!-- HEADER -->
+    <header class="bg-white shadow">
+        <div class="max-w-6xl mx-auto py-4 px-4">
+            <h1 class="text-3xl font-bold text-gray-800">URL Shortener Dashboard</h1>
+        </div>
+    </header>
+
+    <div class="max-w-6xl mx-auto mt-8 px-4">
+
+        <!-- ACTIONS ROW -->
+        <div class="flex items-center justify-between mb-4">
+            <!-- Search -->
+            <input
+                type="text"
+                placeholder="Search by code or URL..."
+                class="w-1/3 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
+            >
+
+            <!-- Add Link Button -->
+            <button onclick="openModal()"
+                class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700">
+                + Add Link
+            </button>
+        </div>
+
+        <!-- TABLE -->
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-600">Short Code</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-600">Target URL</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-600">Clicks</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-600">Last Clicked</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-600">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="links-table" class="bg-white divide-y divide-gray-100">
+                    <!-- Dynamic rows will be inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- ADD LINK MODAL -->
+    <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center">
+        <div class="bg-white w-96 p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-bold mb-4">Add New Link</h2>
+
+            <form id="add-link-form" class="space-y-3">
+                <input type="text" id="targetURL" placeholder="Enter target URL"
+                    class="w-full border px-3 py-2 rounded-lg" required>
+
+                <input type="text" id="customCode" placeholder="Custom short code (optional)"
+                    class="w-full border px-3 py-2 rounded-lg">
+
+                <button type="submit"
+                    class="bg-blue-600 w-full text-white py-2 rounded-lg hover:bg-blue-700">
+                    Create Link
+                </button>
+
+                <button type="button" onclick="closeModal()"
+                    class="w-full mt-2 bg-gray-300 py-2 rounded-lg hover:bg-gray-400">
+                    Cancel
+                </button>
+            </form>
+        </div>
+    </div>
+
+<script>
+
+    
+    function openModal() {
+        document.getElementById("modal").classList.remove("hidden");
+    }
+
+    function closeModal() {
+        document.getElementById("modal").classList.add("hidden");
+    }
+</script>
+
+</body>
+</html>
