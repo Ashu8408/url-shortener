@@ -25,4 +25,22 @@ async function handleGetAnalytics(req, res) {
     });
 }
 
-module.exports ={ handleGenerateNewShortURL, handleGetAnalytics }
+async function handleDeleteURL(req, res) {
+    try {
+        const { shortId } = req.params;
+
+        const deleted = await URL.findOneAndDelete({ shortID: shortId });
+
+        if (!deleted) {
+            return res.status(404).json({ error: "Short URL not found" });
+        }
+
+        return res.json({ message: "Short URL deleted successfully" });
+
+    } catch (error) {
+        console.error("Delete error:", error);
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
+module.exports ={ handleGenerateNewShortURL, handleGetAnalytics, handleDeleteURL }
