@@ -17,6 +17,10 @@ app.get("/", (req,res) => {
 
 app.use("/url", urlRoute)
 
+app.get("/healthz", (req, res) => {
+    res.status(200).json({ status: "ok" });
+});
+
 app.get("/:shortId", async (req, res) => {
     const shortId = req.params.shortId;
 

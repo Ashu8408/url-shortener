@@ -14,7 +14,6 @@
              
         </div>
     </header>
- <p id="checkHealth" class="text-sm mt-2"></p>
     <div class="max-w-6xl mx-auto mt-8 px-4">
         <div class="flex items-center justify-between mb-4">
             <input id="searchInput" onkeyup="applySearchFilter()" type="text" placeholder="Search by Short Code or URL..." class="border px-4 py-2 rounded w-1/3">
@@ -26,6 +25,7 @@
                 + Add Link 
             </button>
         </div>
+        <p id="checkHealth" class="text-sm mt-2"></p>
         <div class="bg-white shadow rounded-lg overflow-hidden">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
@@ -169,6 +169,7 @@
 
             statusText.innerHTML = "Checking...";
 
+            if (window.healthTimer) clearTimeout(window.healthTimer);
             try {
                 const res = await fetch("http://localhost:8001/healthz");
                 const data = await res.json();
@@ -184,6 +185,11 @@
                 statusText.innerHTML = "Server Down";
                 statusText.className = "flex justify-center p-1 text-white bg-red-600 font-semibold";
             }
+            
+            window.healthTimer = setTimeout(() => {
+                statusText.style.display = "none";
+            }, 5000);
+            statusText.style.display = "inline-block";
         });
 
     function openModal() {
