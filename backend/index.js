@@ -1,17 +1,20 @@
 const express = require("express");
 const { connectToMongoDB } = require("./connect2");
-const urlRoute = require("./routes/url")
-const URL = require("./models/url")
+const urlRoute = require("./routes/url");
+const URL = require("./models/url");
 
 
 const app = express();
 const PORT = 8001;
 
 app.use(express.json());    // use express.json() as middleware to fetch api
-
 connectToMongoDB("mongodb://localhost:27017/short-url").then(() => console.log("mongoDB connected"));
 
-app.use("/url", urlRoute)
+app.use("/url", urlRoute);
+
+app.get("/healthz", (req, res) => {
+    res.status(200).json({ status: "ok" });
+});
 
 app.get("/:shortId", async (req, res) => {
     const shortId = req.params.shortId;
@@ -23,7 +26,7 @@ app.get("/:shortId", async (req, res) => {
                 visitHistory: { timestamp: Date.now() }
             }
         },
-        { new: true } // return updated doc
+        { new: true } 
     );
 
     if (!entry) {
