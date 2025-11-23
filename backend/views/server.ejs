@@ -3,40 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>URL Shortener Dashboard</title>
-
-    <!-- Tailwind CDN -->
+    <title>URL Shortener</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-gray-100">
-
-    <!-- HEADER -->
     <header class="bg-white shadow">
         <div class="max-w-6xl mx-auto py-4 px-4">
-            <h1 class="text-3xl font-bold text-gray-800">URL Shortener Dashboard</h1>
+            <h1 class="text-3xl font-bold text-gray-800">URL Shortener</h1>
+             
         </div>
     </header>
-
     <div class="max-w-6xl mx-auto mt-8 px-4">
-
-        <!-- ACTIONS ROW -->
         <div class="flex items-center justify-between mb-4">
-            <!-- Search -->
-            <input
-                type="text"
-                placeholder="Search by code or URL..."
-                class="w-1/3 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
-            >
-
-            <!-- Add Link Button -->
-            <button onclick="openModal()"
-                class="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700">
-                + Add Link
+            <input id="searchInput" onkeyup="applySearchFilter()" type="text" placeholder="Search by Short Code or URL..." class="border px-4 py-2 rounded w-1/3">
+            <button id="healthBtn"
+                class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded">
+                Check Health
+            </button>
+            <button onclick="openModal()" class="bg-green-600 text-white px-4 py-2 rounded">
+                + Add Link 
             </button>
         </div>
-
-        <!-- TABLE -->
+        <p id="checkHealth" class="text-sm mt-2"></p>
         <div class="bg-white shadow rounded-lg overflow-hidden">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
@@ -48,9 +37,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-600">Actions</th>
                     </tr>
                 </thead>
-
                 <tbody id="links-table" class="bg-white divide-y divide-gray-100">
-                    <!-- Dynamic rows will be inserted here -->
                 </tbody>
             </table>
         </div>
@@ -63,19 +50,11 @@
             <h2 class="text-xl font-bold mb-4">Add New Link</h2>
 
             <form id="add-link-form" class="space-y-3">
-                <input type="text" id="targetURL" placeholder="Enter target URL"
-                    class="w-full border px-3 py-2 rounded-lg" required>
-
-                <input type="text" id="customCode" placeholder="Custom short code (optional)"
-                    class="w-full border px-3 py-2 rounded-lg">
-
-                <button type="submit"
-                    class="bg-blue-600 w-full text-white py-2 rounded-lg hover:bg-blue-700">
+                <input type="text" id="targetURL" placeholder="Enter target URL" class="w-full border px-3 py-2 rounded-lg" required>
+                <button type="submit" class="bg-blue-600 w-full text-white py-2 rounded-lg hover:bg-blue-700">
                     Create Link
                 </button>
-
-                <button type="button" onclick="closeModal()"
-                    class="w-full mt-2 bg-gray-300 py-2 rounded-lg hover:bg-gray-400">
+                <button type="button" onclick="closeModal()" class="w-full mt-2 bg-gray-300 py-2 rounded-lg hover:bg-gray-400">
                     Cancel
                 </button>
             </form>
@@ -84,7 +63,135 @@
 
 <script>
 
+    let allLinks = [];
+    function applySearchFilter() {
+        const query = document.getElementById("searchInput").value.toLowerCase();
+
+        const filtered = allLinks.filter(item =>
+            item.shortID.toLowerCase().includes(query) ||
+            item.redirectURL.toLowerCase().includes(query)
+        );
+        renderTable(filtered);
+    }
+
+    async function loadLinks() {
+        try {
+            const res = await fetch("/url/all");
+            allLinks = await res.json();
+            renderTable(allLinks);
+        } catch (err) {
+            console.error("Error loading links:", err);
+        }
+    }
+
     
+    function renderTable(data) {
+        const table = document.getElementById("links-table");
+        table.innerHTML = "";
+
+        data.forEach(item => {
+            const lastClick = item.visitHistory.length > 0
+                ? new Date(item.visitHistory[item.visitHistory.length - 1].timestamp).toLocaleString()
+                : "Never";
+
+            const row = `
+                <tr class="border-b">
+                    <td class="px-6 py-4 text-blue-600">
+                        <a href="/${item.shortID}" target="_blank">${item.shortID}</a>
+                    </td>
+
+                    <td class="px-6 py-4 text-indigo-600 underlin break-all">
+                        <a href="${item.redirectURL}" target="_blank">${item.redirectURL}</a>
+                    </td>
+
+                    <td class="px-6 py-4">${item.visitHistory.length}</td>
+                    <td class="px-6 py-4">${lastClick}</td>
+
+                    <td class="px-6 py-4">
+                        <button onclick="deleteLink('${item.shortID}')"
+                            class="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            `;
+            table.innerHTML += row;
+        });
+    }
+
+    document.getElementById("add-link-form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const url = document.getElementById("targetURL").value;
+        const payload = { url };
+
+        try {
+            const res = await fetch("/url", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+
+            if (res.status === 409) {
+                alert("Short code already exists!");
+                return;
+            }
+            closeModal();
+            loadLinks();
+
+        } catch (err) {
+            console.error("Create error:", err);
+        }
+    });
+
+    
+    async function deleteLink(id) {
+        if (!confirm("Are you sure you want to delete this link?")) return;
+
+        try {
+            const res = await fetch(`/url/${id}`, { method: "DELETE" });
+            const data = await res.json();
+
+            if (res.ok) loadLinks();
+            else alert(data.error || "Delete failed");
+
+        } catch (err) {
+            console.error("Delete error:", err);
+        }
+    }
+
+    loadLinks();
+
+  document.getElementById("healthBtn").addEventListener("click", async () => {
+            const statusText = document.getElementById("checkHealth");
+
+            statusText.innerHTML = "Checking...";
+
+            if (window.healthTimer) clearTimeout(window.healthTimer);
+            try {
+                const res = await fetch("http://localhost:8001/healthz");
+                const data = await res.json();
+
+                if (data.status === "ok") {
+                    statusText.innerHTML = "Server Healthy";
+                    statusText.className = "flex justify-center p-1 text-white bg-green-600 font-semibold";
+                } else {
+                    statusText.innerHTML = "Unexpected response";
+                    statusText.className = "flex justify-center p-1 text-white bg-yellow-600 font-semibold";
+                }
+            } catch (e) {
+                statusText.innerHTML = "Server Down";
+                statusText.className = "flex justify-center p-1 text-white bg-red-600 font-semibold";
+            }
+            
+            window.healthTimer = setTimeout(() => {
+                statusText.style.display = "none";
+            }, 5000);
+            statusText.style.display = "inline-block";
+        });
+
     function openModal() {
         document.getElementById("modal").classList.remove("hidden");
     }
@@ -93,6 +200,5 @@
         document.getElementById("modal").classList.add("hidden");
     }
 </script>
-
 </body>
 </html>
