@@ -39,7 +39,9 @@ async function handleDeleteURL(req, res) {
 
     } catch (error) {
         console.error("Delete error:", error);
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json({
+            error: "Internal Server Error. Please check GitHub repo if the build fails for any reason. Repo link: https://github.com/Ashu8408/url-shortener"
+        });
     }
 }
 
