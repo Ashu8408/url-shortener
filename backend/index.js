@@ -11,6 +11,10 @@ app.use(express.json());    // use express.json() as middleware to fetch api
 
 connectToMongoDB("mongodb://localhost:27017/short-url").then(() => console.log("mongoDB connected"));
 
+app.get("/", (req,res) => {
+    res.render("server.ejs", { shortURL: null })
+});
+
 app.use("/url", urlRoute)
 
 app.get("/:shortId", async (req, res) => {
