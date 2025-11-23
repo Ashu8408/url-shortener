@@ -3,7 +3,7 @@
 A simple URL shortener service built with **Node.js**, **Express**, and **MongoDB**, with support for link creation, analytics, and deletion.
 
 ---
-
+![App Banner](https://github.com/Ashu8408/url-shortener/blob/main/backend/app_screenshot.png)
 ## 🔧 Features
 
 - Create short links for long URLs  
