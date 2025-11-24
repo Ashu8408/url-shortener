@@ -27,19 +27,19 @@ A simple URL shortener service built with **Node.js**, **Express**, and **MongoD
 ---
 
 ## 📂 Project Structure
-
+```
 ├── backend/
-│ ├── index.js # Entry point (Express app)
-│ ├── connect2.js # MongoDB connection logic
+│ ├── index.js 
+│ ├── connect2.js 
 │ ├── controllers/
-│ │ └── url.js # Business logic for URL operations
+│ │ └── url.js 
 │ ├── routes/
-│ │ └── url.js # Express routes for the URL API
+│ │ └── url.js 
 │ └── models/
-│ └── url.js # Mongoose schema for URL
-└── README.md # Project README (this file)
+│ └── url.js
+└── README.md
 
-
+```
 ---
 
 ## 🛠️ Setup & Installation
